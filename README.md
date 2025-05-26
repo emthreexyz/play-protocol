@@ -47,17 +47,17 @@ We follow [Semantic Versioning 2.0.0](https://semver.org/): `MAJOR.MINOR.PATCH`.
 ```json
 {
   "protocolVersion": "1.0.0",  // semver for this protocol version
-
-  "trackHash": "0xabc123...",            // keccak256 or IPFS CID
-  "mediaType": "music" | "audiobook" | "podcast",
-  "walletAddress": "0x1234...",
-  "chainId": "eip155:1" | "solana:mainnet", // CAIP-2 chain identifier
-  "nft": {
+  "trackHash": "0xabc123...",            // keccak256 or IPFS CID of the media file since media can be used by multiple music tracks
+  "mediaType": "music" | "audiobook" | "podcast", // optional
+  "walletAddress": "0x1234...", // this can be the wallet address but it is optional it can be replaced with a salted walletId hash
+  "token": {  // optional NFT context
+    "chainId": "eip155:1" | "solana:mainnet", // CAIP-2 chain identifier
+    "tokenType": "erc721" | "erc1155" | "ercXXX", // Multiple types of tokens can be provided
     "tokenAddress": "0x5678...",
     "tokenId": "42"
-  },                                         // optional NFT context
+  },                                 
   "sessionId": "uuid-v4-string",         // optional grouping of events
-  "eventType": "start" | "pause" | "resume" | "complete",
+  "eventType": "start" | "pause" | "resume" | "complete", // player events
   "timestamp": 1685100000,                 // Unix epoch seconds
   "position": 42.5                          // seconds into the media
 }
@@ -65,7 +65,7 @@ We follow [Semantic Versioning 2.0.0](https://semver.org/): `MAJOR.MINOR.PATCH`.
 
 * **trackHash**: single source of truth, consistent across chains and platforms.
 * **chainId**: follows [CAIP-2](https://github.com/ChainAgnostic/CAIPs/blob/main/CAIPs/caip-2.md), e.g., `"eip155:1"` for Ethereum mainnet, `"solana:mainnet"` for Solana.
-* **nft.tokenAddress/tokenId**: optional on-chain NFT used for playback tracking.
+* **token_data.tokenAddress/tokenId**: optional on-chain NFT used for playback tracking.
 * **sessionId**: groups multiple events into a single playback session.
 * **position/eventType**: enable detailed analytics (e.g., skip behavior, completions).
 
