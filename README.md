@@ -38,7 +38,8 @@ We follow [Semantic Versioning 2.0.0](https://semver.org/): `MAJOR.MINOR.PATCH`.
 
 ### Change History
 
-* **1.0.0** – Initial release: defined `ListenEvent` schema, off‑chain recording, and oracle integration.
+* **0.0.1** – Initial design: defined `ListenEvent` schema, off‑chain recording, and oracle integration.
+* **0.0.1** - Adding sequence diagram of how the protocol would work
 
 ## Data Models
 
@@ -68,6 +69,35 @@ We follow [Semantic Versioning 2.0.0](https://semver.org/): `MAJOR.MINOR.PATCH`.
 * **token_data.tokenAddress/tokenId**: optional on-chain NFT used for playback tracking.
 * **sessionId**: groups multiple events into a single playback session.
 * **position/eventType**: enable detailed analytics (e.g., skip behavior, completions).
+
+## 🎵 Listening Event Flow (Sequence Diagram)
+
+```mermaid
+sequenceDiagram
+  participant User
+  participant MusicPlayer as Music NFT Player (Next.js)
+  participant API as Listen API (Server)
+  participant DB as Offchain Database
+  participant SnapshotJob as Snapshot Publisher
+  participant Oracle as Onchain Oracle Contract
+
+  User->>MusicPlayer: Plays Music NFT
+  MusicPlayer->>API: Emit `listen` event with track_hash, wallet_address
+  API->>DB: Save event record
+  API-->>MusicPlayer: Acknowledge event recorded
+
+  Note over SnapshotJob, DB: Periodically run snapshot job
+
+  SnapshotJob->>DB: Fetch recent events
+  SnapshotJob->>SnapshotJob: Generate Merkle root or data digest
+  SnapshotJob->>Oracle: Publish snapshot root to chain
+  Oracle-->>Blockchain: Store event hash/root
+
+  Note over Oracle, Blockchain: Data is now publicly queryable
+
+  User->>Dapp: View history / earn rewards
+  Dapp->>Oracle: Query snapshot data onchain
+```
 
 ## Off-Chain Recording
 
